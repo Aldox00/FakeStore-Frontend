@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>FakeStore - UpChiapas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Mi Tiendita SOA</h1>
+    <button id="btn-view-favorites">❤️ Favoritos (<span id="fav-count">0</span>)</button>
+  </header>
+
+  <main id="app-container">
+    <!-- ESTADO 1: LOADING (Spinner / Skeleton) -->
+    <div id="state-loading" class="state-container">
+      <div class="spinner"></div>
+      <p>Cargando productos...</p>
+    </div>
+
+    <!-- ESTADO 2: SUCCESS (Contenedor de Tarjetas) -->
+    <div id="state-success" class="state-container hidden">
+      <section id="products-grid" class="grid"></section>
+    </div>
+
+    <!-- ESTADO 3: ERROR (Mensaje Amigable) -->
+    <div id="state-error" class="state-container hidden">
+      <div class="error-box">
+        <h2>¡Ups! Algo salió mal 😢</h2>
+        <p>No pudimos conectar con el servidor. Por favor, intenta de nuevo más tarde.</p>
+        <button onclick="retryFetch()">Reintentar</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==================================================== -->
+  <!-- VENTANA MODAL PARA VER FAVORITOS (Agregado aquí)    -->
+  <!-- ==================================================== -->
+  <div id="favorites-modal" class="modal-container hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Mis Productos Favoritos ❤️</h2>
+        <button id="btn-close-modal" onclick="closeFavoritesModal()">❌ Cerrar</button>
+      </div>
+      <div id="favorites-list" class="favorites-grid">
+        <!-- Aquí se pintarán los favoritos dinámicamente -->
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
