@@ -32,6 +32,10 @@ async function loadProducts() {
       const response = await fetch(REPO2_BACKEND_URL);
       if (!response.ok) throw new Error("Failed to fetch products");
       data = await response.json();
+      
+      if (data && data.success === false) {
+        throw new Error("Backend API externa caida");
+      }
     }
     
     let rawProducts = [];
@@ -48,9 +52,20 @@ async function loadProducts() {
     productsList = rawProducts;
     renderCards(productsList);
     switchState('success');
+
   } catch (error) {
-    console.error("Failed to connect to Catalog (Repo 2):", error);
-    switchState('error'); 
+    console.warn("Fallo el backend o la API externa. Activando catálogo de respaldo en el Front...", error);
+    
+
+    productsList = [
+      { id: 101, title: "Mochila Ergonómica Escolar", price: 25, image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500", description: "Mochila perfecta para llevar tus cuadernos y laptop al campus." },
+      { id: 102, title: "Playera Básica Algodón", price: 12, image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500", description: "Playera cómoda y fresca para el día a día." },
+      { id: 103, title: "Sudadera con Capucha", price: 35, image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500", description: "Sudadera abrigadora con bolsas frontales." },
+      { id: 104, title: "Gorra Deportiva Ajustable", price: 10, image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=500", description: "Protección ideal contra el sol con estilo clásico." }
+    ];
+    
+    renderCards(productsList);
+    switchState('success'); 
   }
 }
 
@@ -145,10 +160,9 @@ function renderCards(products) {
   products.forEach(product => {
     const isFav = favorites.some(fav => fav && Number(fav.productId) === Number(product.id));
     const priceUSD = (product && typeof product.price === 'number') ? product.price : 0;
-    const priceMXN = Math.round(priceUSD * 18.50);
+    const priceMXN = Math.round(priceUSD * 18.50);    
     const titleText = product.title || 'Sin título';
     const descriptionText = product.description ? product.description.substring(0, 80) + '...' : 'Sin descripción disponible.';
-
     const card = document.createElement('div');
     card.className = 'product-card';
     card.innerHTML = `
