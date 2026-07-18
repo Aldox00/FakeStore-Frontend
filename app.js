@@ -1,5 +1,5 @@
 const MODO_SIMULADO = false; 
-const REPO2_BACKEND_URL = "http://localhost:4000/products"; 
+const REPO2_BACKEND_URL = "https://backendfakestore.onrender.com/products"; 
 const REPO3_FAVS_URL = "https://microservicio-favoritos.onrender.com/favoritos"; 
 
 let productsList = [];
@@ -34,16 +34,18 @@ async function loadProducts() {
       data = await response.json();
     }
     
+    let rawProducts = [];
     if (Array.isArray(data)) {
-      productsList = data;
-    } else if (data && Array.isArray(data.products)) {
-      productsList = data.products;
+      rawProducts = data;
     } else if (data && Array.isArray(data.data)) {
-      productsList = data.data;
+      rawProducts = data.data; 
+    } else if (data && Array.isArray(data.products)) {
+      rawProducts = data.products;
     } else {
       throw new Error("Invalid product data format.");
     }
     
+    productsList = rawProducts;
     renderCards(productsList);
     switchState('success');
   } catch (error) {
@@ -142,17 +144,17 @@ function renderCards(products) {
 
   products.forEach(product => {
     const isFav = favorites.some(fav => fav && Number(fav.productId) === Number(product.id));
-    const priceValue = (product && typeof product.price === 'number') ? product.price : 0;
-    
-    const titleText = product.title || 'No Title';
-    const descriptionText = product.description ? product.description.substring(0, 80) + '...' : 'No description available.';
+    const priceUSD = (product && typeof product.price === 'number') ? product.price : 0;
+    const priceMXN = Math.round(priceUSD * 18.50);
+    const titleText = product.title || 'Sin título';
+    const descriptionText = product.description ? product.description.substring(0, 80) + '...' : 'Sin descripción disponible.';
 
     const card = document.createElement('div');
     card.className = 'product-card';
     card.innerHTML = `
       <img src="${product.image || ''}" alt="${titleText}">
       <h3>${titleText}</h3>
-      <p class="price">$${priceValue.toFixed(2)}</p>
+      <p class="price">$${priceMXN} MXN</p>
       <p class="description">${descriptionText}</p>
       <button class="fav-btn ${isFav ? 'active' : ''}" onclick="window.toggleFavorite(${product.id})">
         ${isFav ? '❤️ En Favoritos' : '🤍 Añadir a Favoritos'}
@@ -178,9 +180,11 @@ function renderFavoritesModal() {
   validFavorites.forEach(fav => {
     const realProduct = productsList.find(p => Number(p.id) === Number(fav.productId));
     
-    const title = realProduct ? realProduct.title : (fav.title || 'No Title');
+    const title = realProduct ? realProduct.title : (fav.title || 'Sin título');
     const image = realProduct ? realProduct.image : (fav.image || '');
-    const priceValue = realProduct ? realProduct.price : (typeof fav.price === 'number' ? fav.price : 0);
+    
+    const priceUSD = realProduct ? realProduct.price : (typeof fav.price === 'number' ? fav.price : 0);
+    const priceMXN = Math.round(priceUSD * 18.50);
     
     const item = document.createElement('div');
     item.className = 'fav-item';
@@ -188,7 +192,7 @@ function renderFavoritesModal() {
       <img src="${image}" alt="${title}">
       <div>
         <h4>${title}</h4>
-        <p>$${priceValue.toFixed(2)}</p>
+        <p>$${priceMXN} MXN</p>
       </div>
       <button onclick="window.toggleFavorite(${fav.productId})" style="background:none; border:none; cursor:pointer; font-size:1.2rem;">❌</button>
     `;
