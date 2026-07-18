@@ -56,7 +56,6 @@ async function loadProducts() {
   } catch (error) {
     console.warn("Fallo el backend o la API externa. Activando catálogo de respaldo en el Front...", error);
     
-
     productsList = [
       { id: 101, title: "Mochila Ergonómica Escolar", price: 25, image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500", description: "Mochila perfecta para llevar tus cuadernos y laptop al campus." },
       { id: 102, title: "Playera Básica Algodón", price: 12, image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500", description: "Playera cómoda y fresca para el día a día." },
@@ -163,16 +162,21 @@ function renderCards(products) {
     const priceMXN = Math.round(priceUSD * 18.50);    
     const titleText = product.title || 'Sin título';
     const descriptionText = product.description ? product.description.substring(0, 80) + '...' : 'Sin descripción disponible.';
+    
     const card = document.createElement('div');
     card.className = 'product-card';
     card.innerHTML = `
-      <img src="${product.image || ''}" alt="${titleText}">
-      <h3>${titleText}</h3>
-      <p class="price">$${priceMXN} MXN</p>
-      <p class="description">${descriptionText}</p>
-      <button class="fav-btn ${isFav ? 'active' : ''}" onclick="window.toggleFavorite(${product.id})">
-        ${isFav ? '❤️ En Favoritos' : '🤍 Añadir a Favoritos'}
-      </button>
+      <div class="img-container">
+        <img src="${product.image || ''}" alt="${titleText}">
+      </div>
+      <div class="card-content">
+        <h3>${titleText}</h3>
+        <p class="price">$${priceMXN} MXN</p>
+        <p class="description">${descriptionText}</p>
+        <button class="fav-btn ${isFav ? 'active' : ''}" onclick="window.toggleFavorite(${product.id})">
+          ${isFav ? '❤️ En Favoritos' : '🤍 Añadir a Favoritos'}
+        </button>
+      </div>
     `;
     grid.appendChild(card);
   });
